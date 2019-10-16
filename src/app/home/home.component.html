@@ -1,0 +1,55 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2 style="text-align: center">Welcome to {{ title }}!</h2>
+      <h1 style="text-align: center">Client ID: {{ channelId }}</h1>
+      <div class="col text-center">
+        <button class="mb-2 mt-2 btn-dark align-content-center" (click)="sendMessage()">Send Message From Frontend</button>
+      </div>
+      <h3 style="text-align: center" *ngIf="items.length === 0 || !channelSubscribed">Loading...</h3>
+      <h3 style="text-align: center" *ngIf="itemsCount > 0">Result: {{ itemsCount }}</h3>
+
+      <div class="row">
+
+        <div class="row w-100" style="padding: 10px;">
+          <div class="col-md-8">
+            <input class="w-100" type="text" [(ngModel)]="searchText">
+          </div>
+
+          <div class="col-md-4">
+            <button class="btn-danger" (click)="searchItems()">Search item</button>
+            <button class="btn-primary" (click)="getItems()" *ngIf="itemsCount > 0">Load all items</button>
+          </div>
+        </div>
+
+        <div class="col-md-12">
+          <table *ngIf="channelSubscribed" class="table">
+            <thead class="thead-dark">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Event Type</th>
+              <th scope="col">Content</th>
+              <th scope="col">Created at</th>
+              <th scope="col">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let item of items">
+              <th scope="row">{{ item.id.substring(1, 15) }}</th>
+              <td>{{ item.eventTitle }}</td>
+              <td>{{ item.content }}</td>
+              <td>{{ item.timestamp | date: 'medium' }}</td>
+              <td><a (click)="deleteItem(item.id)" class="text-primary">Delete</a></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col text-center">
+      <button class="mb-2 btn-dark align-content-center" (click)="sendMessage()">Send Message From Frontend</button>
+    </div>
+
+  </div>
+</div>
