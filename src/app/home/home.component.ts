@@ -147,9 +147,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   public sendMessage() {
     this.wss.json({
       action: 'sendMessage',
-      channelId: '2',
-      eventTitle: 'Event from Client 2',
-      content: 'Event description ...'
+      channelId: this.channelId,
+      eventTitle: 'click button',
+      content: '1'
     });
   }
 
