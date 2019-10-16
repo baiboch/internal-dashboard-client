@@ -6,6 +6,11 @@ import { Observable } from 'rxjs';
 import * as d3 from 'd3';
 import Sockette from 'sockette';
 
+interface DataModel {
+  letter: string;
+  frequency: number;
+}
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -21,11 +26,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   searchText: string;
   itemsCount: number;
 
-  @ViewChild('chart')
-  private chartContainer: ElementRef;
+  @ViewChild('chart', {static: false}) chartContainer: ElementRef;
 
-  @Input()
-  data: any = [
+  @Input() data: DataModel[] = [
     {
       letter: 'click button',
       frequency: 0
@@ -65,13 +68,13 @@ export class HomeComponent implements OnInit, OnDestroy {
           let clickBtnEventsArr = this.items.filter(item => {
             return item.eventTitle === 'click button';
           });
-          let clickContent = clickBtnEventsArr.reduce((a, b) => a + parseInt((b['content'] || 0)), 0);
+          let clickContent: number = clickBtnEventsArr.reduce((a, b) => a + (parseInt(b['content']) || 0), 0);
           this.data[0].frequency = clickContent;
 
           let viewPageEventsArr = this.items.filter(item => {
             return item.eventTitle === 'view page';
           });
-          let viewPageContent = viewPageEventsArr.reduce((a, b) => a + parseInt((b['content'] || 0)), 0);
+          let viewPageContent: number = viewPageEventsArr.reduce((a, b) => a + (parseInt(b['content']) || 0), 0);
           this.data[1].frequency = viewPageContent;
 
           this.createChart();
@@ -109,13 +112,13 @@ export class HomeComponent implements OnInit, OnDestroy {
       let clickBtnEventsArr = this.items.filter(item => {
         return item.eventTitle === 'click button';
       });
-      let clickContent = clickBtnEventsArr.reduce((a, b) => a + parseInt((b['content'] || 0)), 0);
+      let clickContent: number = clickBtnEventsArr.reduce((a, b) => a + (parseInt(b['content']) || 0), 0);
       this.data[0].frequency = clickContent;
 
       let viewPageEventsArr = this.items.filter(item => {
         return item.eventTitle === 'view page';
       });
-      let viewPageContent = viewPageEventsArr.reduce((a, b) => a + parseInt((b['content'] || 0)), 0);
+      let viewPageContent: number = viewPageEventsArr.reduce((a, b) => a + (parseInt(b['content']) || 0), 0);
       this.data[1].frequency = viewPageContent;
 
 
