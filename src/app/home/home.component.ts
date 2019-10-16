@@ -153,6 +153,15 @@ export class HomeComponent implements OnInit, OnDestroy {
     });
   }
 
+  public sendMessagePageView() {
+    this.wss.json({
+      action: 'sendMessage',
+      channelId: this.channelId,
+      eventTitle: 'view page',
+      content: '1'
+    });
+  }
+
   public deleteItem(id: string) {
     let item = this.items.find(item => {
       return item.id === id;

@@ -12,8 +12,13 @@
     <div class="col-md-12">
       <h1 style="text-align: center">Client ID: {{ channelId }}</h1>
       <div class="col text-center">
-        <button class="mb-2 mt-2 btn-dark align-content-center" (click)="sendMessage()">Send Message From Frontend</button>
+        <button class="mb-2 mt-2 btn-dark align-content-center" (click)="sendMessage()">Click Button Event</button>
       </div>
+
+      <div class="col text-center">
+        <button class="mb-2 mt-2 btn-dark align-content-center" (click)="sendMessagePageView()">Page View Event</button>
+      </div>
+
       <h3 style="text-align: center" *ngIf="items.length === 0 || !channelSubscribed">Loading...</h3>
       <h3 style="text-align: center" *ngIf="itemsCount > 0">Result: {{ itemsCount }}</h3>
 
@@ -56,7 +61,11 @@
     </div>
 
     <div class="col text-center">
-      <button class="mb-2 btn-dark align-content-center" (click)="sendMessage()">Send Message From Frontend</button>
+      <button class="mb-2 mt-2 btn-dark align-content-center" (click)="sendMessage()">Click Button Event</button>
+    </div>
+
+    <div class="col text-center">
+      <button class="mb-2 mt-2 btn-dark align-content-center" (click)="sendMessagePageView()">Page View Event</button>
     </div>
 
   </div>
