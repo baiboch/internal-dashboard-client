@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 @Injectable()
 export class AppService {
-  private itemsEndpoint = 'http://127.0.0.1:8000/google-shopping/items/';
+  private itemsEndpoint = 'http://int-cli.avana.asia/google-shopping/items/';
   constructor(private http: HttpClient) {}
 
   getItems(channelId: string): Observable<ItemInterface[]> {
@@ -13,10 +13,10 @@ export class AppService {
   }
 
   deleteItem(id: string, channelId: string): Observable<any> {
-    return this.http.get(`http://127.0.0.1:8000/google-shopping/delete/${id}/${channelId}`);
+    return this.http.get(`http://int-cli.avana.asia/google-shopping/delete/${id}/${channelId}`);
   }
 
   searchItem(search: string, channelId: string): Observable<any> {
-    return this.http.get(`http://127.0.0.1:8000/google-shopping/search/${channelId}/${search}`);
+    return this.http.get(`http://int-cli.avana.asia/google-shopping/search/${channelId}/${search}`);
   }
 }
