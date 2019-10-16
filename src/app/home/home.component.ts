@@ -1,7 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ElementRef, Input, OnChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AppService } from '../app.service';
 import { ItemInterface } from '../app.component';
+import { Observable } from 'rxjs';
+import * as d3 from 'd3';
 import Sockette from 'sockette';
 
 @Component({
@@ -18,6 +20,23 @@ export class HomeComponent implements OnInit, OnDestroy {
   channelSubscribed: boolean;
   searchText: string;
   itemsCount: number;
+
+  @ViewChild('chart')
+  private chartContainer: ElementRef;
+
+  @Input()
+  data: any = [
+    {
+      letter: 'click button',
+      frequency: 0
+    },
+    {
+      letter: 'view page',
+      frequency: 0
+    },
+  ];
+
+  margin = {top: 20, right: 20, bottom: 30, left: 40};
 
   constructor(private appService: AppService, private route: ActivatedRoute) {}
 
@@ -42,6 +61,20 @@ export class HomeComponent implements OnInit, OnDestroy {
             content: messageData.content,
             timestamp: messageData.timestamp
           });
+
+          let clickBtnEventsArr = this.items.filter(item => {
+            return item.eventTitle === 'click button';
+          });
+          let clickContent = clickBtnEventsArr.reduce((a, b) => a + parseInt((b['content'] || 0)), 0);
+          this.data[0].frequency = clickContent;
+
+          let viewPageEventsArr = this.items.filter(item => {
+            return item.eventTitle === 'view page';
+          });
+          let viewPageContent = viewPageEventsArr.reduce((a, b) => a + parseInt((b['content'] || 0)), 0);
+          this.data[1].frequency = viewPageContent;
+
+          this.createChart();
         }
       },
       onerror: () => {
@@ -72,6 +105,22 @@ export class HomeComponent implements OnInit, OnDestroy {
   public getItems() {
     this.appService.getItems(this.channelId).subscribe( (items: ItemInterface[]) => {
       this.items = items;
+
+      let clickBtnEventsArr = this.items.filter(item => {
+        return item.eventTitle === 'click button';
+      });
+      let clickContent = clickBtnEventsArr.reduce((a, b) => a + parseInt((b['content'] || 0)), 0);
+      this.data[0].frequency = clickContent;
+
+      let viewPageEventsArr = this.items.filter(item => {
+        return item.eventTitle === 'view page';
+      });
+      let viewPageContent = viewPageEventsArr.reduce((a, b) => a + parseInt((b['content'] || 0)), 0);
+      this.data[1].frequency = viewPageContent;
+
+
+      this.createChart();
+
       this.channelSubscribed = true;
       this.itemsCount = null;
       this.searchText = null;
@@ -112,6 +161,58 @@ export class HomeComponent implements OnInit, OnDestroy {
         console.log(event);
       });
     }
+  }
+
+  private createChart(): void {
+    d3.select('svg').remove();
+
+    const element = this.chartContainer.nativeElement;
+    const data = this.data;
+
+    const svg = d3.select(element).append('svg')
+      .attr('width', element.offsetWidth)
+      .attr('height', element.offsetHeight);
+
+    const contentWidth = element.offsetWidth - this.margin.left - this.margin.right;
+    const contentHeight = element.offsetHeight - this.margin.top - this.margin.bottom;
+
+    const x = d3
+      .scaleBand()
+      .rangeRound([0, contentWidth])
+      .padding(0.1)
+      .domain(data.map(d => d.letter));
+
+    const y = d3
+      .scaleLinear()
+      .rangeRound([contentHeight, 0])
+      .domain([0, d3.max(data, d => d.frequency)]);
+
+    const g = svg.append('g')
+      .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+
+    g.append('g')
+      .attr('class', 'axis axis--x')
+      .attr('transform', 'translate(0,' + contentHeight + ')')
+      .call(d3.axisBottom(x));
+
+    g.append('g')
+      .attr('class', 'axis axis--y')
+      .call(d3.axisLeft(y).ticks(10, '%'))
+      .append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', 6)
+      .attr('dy', '0.71em')
+      .attr('text-anchor', 'end')
+      .text('Frequency');
+
+    g.selectAll('.bar')
+      .data(data)
+      .enter().append('rect')
+      .attr('class', 'bar')
+      .attr('x', d => x(d.letter))
+      .attr('y', d => y(d.frequency))
+      .attr('width', x.bandwidth())
+      .attr('height', d => contentHeight - y(d.frequency));
   }
 
   ngOnDestroy(): void {
