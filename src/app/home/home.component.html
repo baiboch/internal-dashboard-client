@@ -3,28 +3,29 @@
   <div class="row">
     <div class="col-md-12">
       <h2 style="text-align: center">Welcome to {{ title }}!</h2>
-
-      <div #chart id="chart"></div>
+      <div *ngIf="channelId == 'dashboard'" #chart id="chart"></div>
     </div>
   </div>
 
   <div class="row">
     <div class="col-md-12">
-      <h1 style="text-align: center">Client ID: {{ channelId }}</h1>
-      <div class="col text-center">
+      <h1 *ngIf="channelId !== 'dashboard'" style="text-align: center">Client ID: {{ channelId }}</h1>
+      <h1 *ngIf="channelId == 'dashboard'" style="text-align: center">Dashboard</h1>
+
+      <div *ngIf="channelId !== 'dashboard'" class="col text-center">
         <button class="mb-2 mt-2 btn-dark align-content-center" (click)="sendMessage()">Click Button Event</button>
       </div>
 
-      <div class="col text-center">
+      <div *ngIf="channelId !== 'dashboard'" class="col text-center">
         <button class="mb-2 mt-2 btn-dark align-content-center" (click)="sendMessagePageView()">Page View Event</button>
       </div>
 
-      <h3 style="text-align: center" *ngIf="items.length === 0 || !channelSubscribed">Loading...</h3>
+      <h3 style="text-align: center" *ngIf="channelId == 'dashboard' && (items.length === 0 || !channelSubscribed)">Loading...</h3>
       <h3 style="text-align: center" *ngIf="itemsCount > 0">Result: {{ itemsCount }}</h3>
 
       <div class="row">
 
-        <div class="row w-100" style="padding: 10px;">
+        <div *ngIf="channelId == 'dashboard'" class="row w-100" style="padding: 10px;">
           <div class="col-md-8">
             <input class="w-100" type="text" [(ngModel)]="searchText">
           </div>
@@ -35,7 +36,7 @@
           </div>
         </div>
 
-        <div class="col-md-12">
+        <div *ngIf="channelId == 'dashboard'" class="col-md-12">
           <table *ngIf="channelSubscribed" class="table">
             <thead class="thead-dark">
             <tr>
@@ -58,14 +59,6 @@
           </table>
         </div>
       </div>
-    </div>
-
-    <div class="col text-center">
-      <button class="mb-2 mt-2 btn-dark align-content-center" (click)="sendMessage()">Click Button Event</button>
-    </div>
-
-    <div class="col text-center">
-      <button class="mb-2 mt-2 btn-dark align-content-center" (click)="sendMessagePageView()">Page View Event</button>
     </div>
 
   </div>

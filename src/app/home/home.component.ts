@@ -57,28 +57,31 @@ export class HomeComponent implements OnInit, OnDestroy {
       },
       onmessage: event => {
         const messageData: ItemInterface = JSON.parse(event.data);
-        if (messageData.event === 'channel_message') {
-          this.items.unshift({
-            id: messageData.id,
-            eventTitle: messageData.eventTitle,
-            content: messageData.content,
-            timestamp: messageData.timestamp
-          });
+        if (this.channelId == 'dashboard') {
+          if (messageData.event === 'channel_message') {
+            this.items.unshift({
+              id: messageData.id,
+              eventTitle: messageData.eventTitle,
+              content: messageData.content,
+              timestamp: messageData.timestamp
+            });
 
-          let clickBtnEventsArr = this.items.filter(item => {
-            return item.eventTitle === 'click button';
-          });
-          let clickContent: number = clickBtnEventsArr.reduce((a, b) => a + (parseInt(b['content']) || 0), 0);
-          this.data[0].frequency = clickContent;
+            let clickBtnEventsArr = this.items.filter(item => {
+              return item.eventTitle === 'click button';
+            });
+            let clickContent: number = clickBtnEventsArr.reduce((a, b) => a + (parseInt(b['content']) || 0), 0);
+            this.data[0].frequency = clickContent;
 
-          let viewPageEventsArr = this.items.filter(item => {
-            return item.eventTitle === 'view page';
-          });
-          let viewPageContent: number = viewPageEventsArr.reduce((a, b) => a + (parseInt(b['content']) || 0), 0);
-          this.data[1].frequency = viewPageContent;
+            let viewPageEventsArr = this.items.filter(item => {
+              return item.eventTitle === 'view page';
+            });
+            let viewPageContent: number = viewPageEventsArr.reduce((a, b) => a + (parseInt(b['content']) || 0), 0);
+            this.data[1].frequency = viewPageContent;
 
-          this.createChart();
+            this.createChart();
+          }
         }
+
       },
       onerror: () => {
         console.log('Websocket connection error, reconnecting...');
@@ -106,28 +109,30 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   public getItems() {
-    this.appService.getItems(this.channelId).subscribe( (items: ItemInterface[]) => {
-      this.items = items;
+    if (this.channelId == 'dashboard') {
+      this.appService.getItems(this.channelId).subscribe( (items: ItemInterface[]) => {
+        this.items = items;
 
-      let clickBtnEventsArr = this.items.filter(item => {
-        return item.eventTitle === 'click button';
+        let clickBtnEventsArr = this.items.filter(item => {
+          return item.eventTitle === 'click button';
+        });
+        let clickContent: number = clickBtnEventsArr.reduce((a, b) => a + (parseInt(b['content']) || 0), 0);
+        this.data[0].frequency = clickContent;
+
+        let viewPageEventsArr = this.items.filter(item => {
+          return item.eventTitle === 'view page';
+        });
+        let viewPageContent: number = viewPageEventsArr.reduce((a, b) => a + (parseInt(b['content']) || 0), 0);
+        this.data[1].frequency = viewPageContent;
+
+
+        this.createChart();
+
+        this.channelSubscribed = true;
+        this.itemsCount = null;
+        this.searchText = null;
       });
-      let clickContent: number = clickBtnEventsArr.reduce((a, b) => a + (parseInt(b['content']) || 0), 0);
-      this.data[0].frequency = clickContent;
-
-      let viewPageEventsArr = this.items.filter(item => {
-        return item.eventTitle === 'view page';
-      });
-      let viewPageContent: number = viewPageEventsArr.reduce((a, b) => a + (parseInt(b['content']) || 0), 0);
-      this.data[1].frequency = viewPageContent;
-
-
-      this.createChart();
-
-      this.channelSubscribed = true;
-      this.itemsCount = null;
-      this.searchText = null;
-    });
+    }
   }
 
   private subscribeChannel() {
@@ -135,7 +140,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       console.log('subscription channel');
       this.wss.json({
         action: 'subscribeChannel',
-        channelId: this.channelId
+        channelId: 'dashboard'
       });
 
       if (this.channelId) {
@@ -147,7 +152,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public sendMessage() {
     this.wss.json({
       action: 'sendMessage',
-      channelId: this.channelId,
+      channelId: 'dashboard',
       eventTitle: 'click button',
       content: '1'
     });
@@ -156,7 +161,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public sendMessagePageView() {
     this.wss.json({
       action: 'sendMessage',
-      channelId: this.channelId,
+      channelId: 'dashboard',
       eventTitle: 'view page',
       content: '1'
     });
@@ -209,7 +214,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     g.append('g')
       .attr('class', 'axis axis--y')
-      .call(d3.axisLeft(y).ticks(10, '%'))
+      .call(d3.axisLeft(y).ticks(1))
       .append('text')
       .attr('transform', 'rotate(-90)')
       .attr('y', 6)
