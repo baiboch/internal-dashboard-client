@@ -146,7 +146,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       if (this.channelId) {
         this.getItems();
       }
-    }, 3000);
+    }, 5000);
   }
 
   public sendMessage() {
