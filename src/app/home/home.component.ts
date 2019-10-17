@@ -225,7 +225,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     g.selectAll('.bar')
       .data(data)
       .enter().append('rect')
-      .attr('class', 'bar')
+      .attr('class', d => d.letter == 'click button' ? 'bar' : 'page_view')
       .attr('x', d => x(d.letter))
       .attr('y', d => y(d.frequency))
       .attr('width', x.bandwidth())
